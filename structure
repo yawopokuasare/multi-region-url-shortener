@@ -1,0 +1,49 @@
+multi-region-url-shortener/
+├── README.md
+├── .gitignore
+├── terraform/
+│   ├── modules/
+│   │   ├── dynamodb/
+│   │   │   ├── main.tf
+│   │   │   ├── variables.tf
+│   │   │   └── outputs.tf
+│   │   ├── lambda/
+│   │   │   ├── main.tf
+│   │   │   ├── variables.tf
+│   │   │   └── outputs.tf
+│   │   ├── api-gateway/
+│   │   │   ├── main.tf
+│   │   │   ├── variables.tf
+│   │   │   └── outputs.tf
+│   │   └── cloudfront/
+│   │       ├── main.tf
+│   │       ├── variables.tf
+│   │       └── outputs.tf
+│   └── environments/
+│       ├── dev-single-region/
+│       │   ├── main.tf
+│       │   ├── variables.tf
+│       │   ├── terraform.tfvars
+│       │   └── outputs.tf
+│       └── prod-multi-region/
+│           ├── main.tf
+│           ├── variables.tf
+│           ├── terraform.tfvars
+│           └── outputs.tf
+├── src/
+│   └── lambda/
+│       ├── create-url/
+│       │   ├── index.js
+│       │   └── package.json
+│       ├── redirect/
+│       │   ├── index.js
+│       │   └── package.json
+│       └── health-check/
+│           ├── index.js
+│           └── package.json
+├── scripts/
+│   ├── test-failover.sh
+│   └── setup-billing-alarm.sh
+└── docs/
+    ├── ARCHITECTURE.md
+    └── COST_ANALYSIS.md

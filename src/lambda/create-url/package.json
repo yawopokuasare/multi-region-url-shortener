@@ -1,0 +1,9 @@
+{
+  "name": "create-url",
+  "version": "1.0.0",
+  "description": "Create short URLs",
+  "main": "index.js",
+  "dependencies": {
+    "aws-sdk": "^2.1000.0"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "redirect",
+  "version": "1.0.0",
+  "description": "Redirect short URLs",
+  "main": "index.js",
+  "dependencies": {
+    "aws-sdk": "^2.1693.0"
+  }
+}
