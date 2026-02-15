@@ -1,26 +1,44 @@
-const AWS = require('aws-sdk');
-const dynamodb = new AWS.DynamoDB.DocumentClient();
+const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+const { DynamoDBDocumentClient, GetCommand, UpdateCommand } = require('@aws-sdk/lib-dynamodb');
+
+const client = new DynamoDBClient({});
+const dynamodb = DynamoDBDocumentClient.from(client);
 
 exports.handler = async (event) => {
-  console.log('Event:', JSON.stringify(event, null, 2));
+  console.log('Full Event:', JSON.stringify(event, null, 2));
   
   try {
-    const shortCode = event.pathParameters?.code || event.pathParameters?.proxy;
+    // HTTP API (v2) uses event.pathParameters.code
+    // Also check rawPath as backup
+    let shortCode = event.pathParameters?.code;
+    
+    // If not found, try parsing rawPath
+    if (!shortCode && event.rawPath) {
+      shortCode = event.rawPath.substring(1); // Remove leading /
+    }
+    
+    console.log('Extracted shortCode:', shortCode);
     
     if (!shortCode) {
       return {
         statusCode: 400,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: 'Short code required' })
+        body: JSON.stringify({ 
+          error: 'Short code required',
+          debug: {
+            pathParameters: event.pathParameters,
+            rawPath: event.rawPath
+          }
+        })
       };
     }
     
-    const params = {
+    const result = await dynamodb.send(new GetCommand({
       TableName: process.env.TABLE_NAME,
       Key: { shortCode: shortCode }
-    };
+    }));
     
-    const result = await dynamodb.get(params).promise();
+    console.log('DynamoDB result:', JSON.stringify(result, null, 2));
     
     if (!result.Item) {
       return {
@@ -30,8 +48,8 @@ exports.handler = async (event) => {
       };
     }
     
-    // Increment hit counter (fire and forget, don't wait)
-    dynamodb.update({
+    // Increment hit counter (fire and forget)
+    dynamodb.send(new UpdateCommand({
       TableName: process.env.TABLE_NAME,
       Key: { shortCode: shortCode },
       UpdateExpression: 'SET hits = if_not_exists(hits, :zero) + :inc',
@@ -39,7 +57,7 @@ exports.handler = async (event) => {
         ':inc': 1,
         ':zero': 0
       }
-    }).promise().catch(err => console.error('Failed to increment counter:', err));
+    })).catch(err => console.error('Failed to increment counter:', err));
     
     console.log('Redirecting', shortCode, 'to', result.Item.longUrl);
     
@@ -56,7 +74,10 @@ exports.handler = async (event) => {
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: 'Internal server error' })
+      body: JSON.stringify({ 
+        error: 'Internal server error',
+        message: error.message 
+      })
     };
   }
 };

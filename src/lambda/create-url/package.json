@@ -1,9 +1,9 @@
 {
-  "name": "create-url",
+  "name": "url-shortener-create",
   "version": "1.0.0",
-  "description": "Create short URLs",
   "main": "index.js",
   "dependencies": {
-    "aws-sdk": "^2.1000.0"
+    "@aws-sdk/client-dynamodb": "^3.600.0",
+    "@aws-sdk/lib-dynamodb": "^3.600.0"
   }
 }

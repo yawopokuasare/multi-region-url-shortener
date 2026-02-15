@@ -1,6 +1,9 @@
-const AWS = require('aws-sdk');
-const dynamodb = new AWS.DynamoDB.DocumentClient();
+const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+const { DynamoDBDocumentClient, PutCommand } = require('@aws-sdk/lib-dynamodb');
 const crypto = require('crypto');
+
+const client = new DynamoDBClient({});
+const dynamodb = DynamoDBDocumentClient.from(client);
 
 exports.handler = async (event) => {
   console.log('Event:', JSON.stringify(event, null, 2));
@@ -20,10 +23,9 @@ exports.handler = async (event) => {
       };
     }
     
-    // Generate 6-character short code
     const shortCode = crypto.randomBytes(3).toString('hex');
     
-    const params = {
+    await dynamodb.send(new PutCommand({
       TableName: process.env.TABLE_NAME,
       Item: {
         shortCode: shortCode,
@@ -32,9 +34,7 @@ exports.handler = async (event) => {
         createdRegion: process.env.AWS_REGION,
         hits: 0
       }
-    };
-    
-    await dynamodb.put(params).promise();
+    }));
     
     console.log('Created short URL:', shortCode);
     

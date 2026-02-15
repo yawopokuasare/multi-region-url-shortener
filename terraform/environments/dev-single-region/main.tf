@@ -48,8 +48,7 @@ module "create_lambda" {
   environment_variables = {
     TABLE_NAME = module.dynamodb.table_name
     BASE_URL   = "https://example.com" # Will be updated after API Gateway creation
-    AWS_REGION = var.primary_region
-  }
+    }
   
   tags = local.common_tags
 }
@@ -67,7 +66,7 @@ module "redirect_lambda" {
   
   environment_variables = {
     TABLE_NAME = module.dynamodb.table_name
-    AWS_REGION = var.primary_region
+  
   }
   
   tags = local.common_tags
@@ -86,7 +85,7 @@ module "health_lambda" {
   
   environment_variables = {
     TABLE_NAME = module.dynamodb.table_name
-    AWS_REGION = var.primary_region
+  
   }
   
   tags = local.common_tags

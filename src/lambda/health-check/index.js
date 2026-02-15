@@ -1,14 +1,16 @@
-const AWS = require('aws-sdk');
-const dynamodb = new AWS.DynamoDB.DocumentClient();
+const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+const { DynamoDBDocumentClient, ScanCommand } = require('@aws-sdk/lib-dynamodb');
+
+const client = new DynamoDBClient({});
+const dynamodb = DynamoDBDocumentClient.from(client);
 
 exports.handler = async (event) => {
   try {
-    // Test DynamoDB connectivity
     const startTime = Date.now();
-    await dynamodb.scan({
+    await dynamodb.send(new ScanCommand({
       TableName: process.env.TABLE_NAME,
       Limit: 1
-    }).promise();
+    }));
     const latency = Date.now() - startTime;
     
     return {
