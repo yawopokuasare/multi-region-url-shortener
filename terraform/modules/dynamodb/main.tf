@@ -32,20 +32,3 @@ resource "aws_dynamodb_table" "urls" {
     }
   )
 }
-
-# Global table replica (only created if replica_region is set)
-resource "aws_dynamodb_table_replica" "replica" {
-  count = var.replica_region != "" ? 1 : 0
-
-  global_table_arn = aws_dynamodb_table.urls.arn
-  
-  tags = merge(
-    var.tags,
-    {
-      Name        = "${var.table_name}-replica"
-      Environment = var.environment
-    }
-  )
-
-  depends_on = [aws_dynamodb_table.urls]
-}
