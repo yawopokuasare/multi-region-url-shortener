@@ -1,4 +1,3 @@
-cat > README.md << 'EOF'
 # Multi-Region URL Shortener with Automated Failover
 
 > **Status**: ✅ PRODUCTION-READY | Deployed & Tested | <5s Replication Verified
@@ -230,6 +229,25 @@ aws dynamodb list-tables
 aws lambda list-functions --region us-east-1
 aws lambda list-functions --region us-west-2
 ```
+
+## 📸 Visual Evidence
+
+### DynamoDB Global Tables (Active in Both Regions)
+![DynamoDB Global Tables](images/screenshots/dynamodb-global-tables.png)
+*Both us-east-1 and us-west-2 replicas showing ACTIVE status with sub-5s replication*
+
+### Route 53 Health Checks (Monitoring Both Regions)
+![Route 53 Health Checks](images/screenshots/route53-health-checks.png)
+*Health checks pinging both regions every 30 seconds - all green*
+
+### Lambda Functions Deployed (Primary Region)
+![Lambda Primary](images/screenshots/lambda-functions-primary.png)
+*Three Lambda functions deployed in us-east-1: create, redirect, health*
+
+### Lambda Functions Deployed (Secondary Region)
+![Lambda Secondary](images/screenshots/lambda-functions-secondary.png)
+*Identical deployment in us-west-2 for failover capability*
+
 
 ## 🚀 Future Enhancements
 
