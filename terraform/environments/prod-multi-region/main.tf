@@ -64,7 +64,6 @@ module "create_lambda_primary" {
   environment_variables = {
     TABLE_NAME = module.dynamodb_primary.table_name
     BASE_URL   = var.domain_name != "" ? "https://${var.domain_name}" : "https://example.com"
-    AWS_REGION = var.primary_region
   }
   
   tags = merge(local.common_tags, { Region = var.primary_region })
@@ -87,7 +86,7 @@ module "redirect_lambda_primary" {
   
   environment_variables = {
     TABLE_NAME = module.dynamodb_primary.table_name
-    AWS_REGION = var.primary_region
+    
   }
   
   tags = merge(local.common_tags, { Region = var.primary_region })
@@ -110,7 +109,7 @@ module "health_lambda_primary" {
   
   environment_variables = {
     TABLE_NAME = module.dynamodb_primary.table_name
-    AWS_REGION = var.primary_region
+    
   }
   
   tags = merge(local.common_tags, { Region = var.primary_region })
@@ -152,23 +151,23 @@ module "dynamodb_secondary" {
 }
 
 # Create Global Table
-resource "aws_dynamodb_global_table" "urls" {
-  provider = aws.primary
-  name     = module.dynamodb_primary.table_name
-
-  replica {
-    region_name = var.primary_region
+# Add replica to primary table (Global Table V2)
+resource "null_resource" "enable_global_table" {
+  provisioner "local-exec" {
+    command = <<EOF
+aws dynamodb update-table \
+  --table-name ${module.dynamodb_primary.table_name} \
+  --region ${var.primary_region} \
+  --replica-updates '[{"Create": {"RegionName": "${var.secondary_region}"}}]' \
+  --stream-specification StreamEnabled=true,StreamViewType=NEW_AND_OLD_IMAGES || true
+EOF
   }
-
-  replica {
-    region_name = var.secondary_region
-  }
-
+  
   depends_on = [
     module.dynamodb_primary,
     module.dynamodb_secondary
   ]
-}
+} 
 
 module "create_lambda_secondary" {
   source = "../../modules/lambda"
@@ -188,7 +187,7 @@ module "create_lambda_secondary" {
   environment_variables = {
     TABLE_NAME = module.dynamodb_secondary.table_name
     BASE_URL   = var.domain_name != "" ? "https://${var.domain_name}" : "https://example.com"
-    AWS_REGION = var.secondary_region
+    
   }
   
   tags = merge(local.common_tags, { Region = var.secondary_region })
@@ -211,7 +210,7 @@ module "redirect_lambda_secondary" {
   
   environment_variables = {
     TABLE_NAME = module.dynamodb_secondary.table_name
-    AWS_REGION = var.secondary_region
+    
   }
   
   tags = merge(local.common_tags, { Region = var.secondary_region })
@@ -234,7 +233,7 @@ module "health_lambda_secondary" {
   
   environment_variables = {
     TABLE_NAME = module.dynamodb_secondary.table_name
-    AWS_REGION = var.secondary_region
+    
   }
   
   tags = merge(local.common_tags, { Region = var.secondary_region })
