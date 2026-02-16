@@ -260,4 +260,4 @@ MIT License - Use this for your portfolio, learning, or interviews.
 **Status**: Actively seeking Cloud/DevOps opportunities
 
 **Built with**: ☕ Coffee, 💪 Determination, and 🔥 Late nights
-EOF
+
