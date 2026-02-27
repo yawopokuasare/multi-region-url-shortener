@@ -142,18 +142,6 @@ CloudWatch Logs            $0.50   7-day retention
 TOTAL                      $2.50/mo
 ```
 
-**At scale (1M requests/month)**: ~$8-10/month
-
-## 🎯 What Hiring Managers See
-
-When you show this in an interview:
-
-**They ask**: "Tell me about a challenging project"
-
-**You say**: "I built a multi-region disaster recovery system on AWS with proven sub-5-second replication. The interesting part was debugging DynamoDB Global Tables - AWS doesn't document that you can't use customer-managed KMS keys with the legacy Global Tables API, so I had to migrate to the V2 API using AWS CLI. I tested failover by simulating a regional outage - the system recovered in 90 seconds with zero data loss. The entire DR setup costs $3/month because I optimized for pay-per-request billing and right-sized the health check frequency."
-
-**They think**: *This person has actually built production systems.*
-
 ## 🛠️ Technologies Used
 
 | Category | Technology | Why |
